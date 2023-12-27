@@ -1,7 +1,9 @@
 import yaml
 from sqlalchemy import create_engine
+from sqlalchemy import exc
 import pandas as pd
-
+import os
+from pathlib import Path
 
 def load_credentials(file_path):
     with open(file_path, 'r') as file:
@@ -16,21 +18,31 @@ class RDSDatabaseConnector:
         self.user = credentials.get('RDS_USER')
         self.password = credentials.get('RDS_PASSWORD')
         self.database = credentials.get('RDS_DATABASE')
-        self.engine = self.initialize_sql_engine()
-
+     
     def initialize_sql_engine(self):
         engine = create_engine(
-            f"mysql+pymysql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}",
-            pool_recycle=3600
-        )
+            f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}")
+        engine.connect()
         return engine
+    
 
-    def extract_data_as_dataframe(self, query):
-        df = pd.read_sql_query(query, self.engine)
+    def extract_data_as_dataframe(self, table):
+       
+        engine = self.initialize_sql_engine()
+        df = pd.read_sql_table(table, engine)
+        
         return df
+    
+    @staticmethod
+    def save_data_to_csv( df, name, folder='Data'):
+        pwd = os.getcwd()
+        save_path = os.path.join(pwd, folder, name)
+        filepath = Path(save_path)
 
-    def save_data_to_csv(self, df, file_path):
-        df.to_csv(file_path, index=False)
+        # Create the directory if it doesn't exist
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(filepath)
+      
 
 
 def load_data_from_csv(file_path):
@@ -44,11 +56,10 @@ credentials_data = load_credentials('Exploratory Data Analysis - Customer Loans 
 # Create an instance of RDSDatabaseConnector
 rds_connector = RDSDatabaseConnector(credentials_data)
 
-query = "SELECT * FROM loan_payments"
-df_from_rds = rds_connector.extract_data_as_dataframe(query)
+df_from_rds = rds_connector.extract_data_as_dataframe('loan_payments')
 
-rds_connector.save_data_to_csv(df_from_rds, 'output.csv')
+rds_connector.save_data_to_csv(df_from_rds, 'output_loan_data.csv')
 
 # Load DataFrame from CSV
-loaded_df = load_data_from_csv('output.csv')
+loaded_df = load_data_from_csv('Data\output_loan_data.csv')
 print(loaded_df.head())
