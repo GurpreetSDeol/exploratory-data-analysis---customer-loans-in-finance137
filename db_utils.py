@@ -5,8 +5,8 @@ import pandas as pd
 import os
 from pathlib import Path
 
-def load_credentials(file_path):
-    with open(file_path, 'r') as file:
+def load_credentials():
+    with open('C:\\Users\\Gurpr\\OneDrive\\Documents\\AI Core\\Exploratory Data Analysis - Customer Loans in Finance\\credentials.yaml') as file:
         credentials_data = yaml.safe_load(file)
     return credentials_data
 
@@ -34,15 +34,13 @@ class RDSDatabaseConnector:
         return df
     
     @staticmethod
-    def save_data_to_csv( df, name, folder='Data'):
+    def save_data_to_csv( df, name, folder='C:\\Users\\Gurpr\\OneDrive\\Documents\\AI Core\\Exploratory Data Analysis - Customer Loans in Finance\\Data'):
         pwd = os.getcwd()
         save_path = os.path.join(pwd, folder, name)
         filepath = Path(save_path)
+        df.to_csv(filepath, index=False)
 
-        # Create the directory if it doesn't exist
-        filepath.parent.mkdir(parents=True, exist_ok=True)
-        df.to_csv(filepath)
-      
+  
 
 
 def load_data_from_csv(file_path):
@@ -51,7 +49,7 @@ def load_data_from_csv(file_path):
 
 
 # Load credentials from YAML file
-credentials_data = load_credentials('Exploratory Data Analysis - Customer Loans in Finance/credentials.yaml')
+credentials_data = load_credentials()
 
 # Create an instance of RDSDatabaseConnector
 rds_connector = RDSDatabaseConnector(credentials_data)
@@ -61,5 +59,5 @@ df_from_rds = rds_connector.extract_data_as_dataframe('loan_payments')
 rds_connector.save_data_to_csv(df_from_rds, 'output_loan_data.csv')
 
 # Load DataFrame from CSV
-loaded_df = load_data_from_csv('Data\output_loan_data.csv')
-print(loaded_df.head())
+#loaded_df = load_data_from_csv('Data\output_loan_data.csv')
+#print(loaded_df.head())
