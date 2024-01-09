@@ -22,9 +22,9 @@ class Plotter:
         pyplot.show()
 
    
-    def qq_plot(self, col):
-        self.df.sort_values(by=col, ascending=True)
-        qq_plot = qqplot(self.df[col], scale=1, line='q')
+    def qq_plot(self, column):
+        self.df.sort_values(by=column, ascending=True)
+        qq_plot = qqplot(self.df[column], scale=1, line='q')
         pyplot.show()
 
    
@@ -40,8 +40,8 @@ class Plotter:
         pyplot.tight_layout()
     
     
-    def agostino_k2_test(self, col):
-        stat, p = normaltest(self.df[col], nan_policy='omit')
+    def agostino_k2_test(self, column):
+        stat, p = normaltest(self.df[column], nan_policy='omit')
         print('Statistics=%.3f, p=%.3f' % (stat, p))
 
 
@@ -50,15 +50,33 @@ class Plotter:
         pyplot.show()
 
   
-    def correlated_vars(self, cols):
+    def correlated_variables(self, cols):
         corr = self.df[cols].corr()
         mask = np.zeros_like(corr)
         mask[np.triu_indices_from(mask)] = True
         pyplot.figure(figsize=(10, 8))
 
-        cmap = sns.diverging_palette(100, 10, as_cmap=True)
-
+        cmap = sns.diverging_palette(50, 10, as_cmap=True)
         sns.heatmap(corr, mask=mask, square=True, linewidths=5,
                     annot=False)
 
+        pyplot.show()
+   
+
+
+def plot_percentage_bar_chart(x_values, y_values, title):
+
+
+        # Plot the bar chart
+        bars = pyplot.bar(x_values, y_values, color=['red'], alpha=0.7)
+        pyplot.title(title)
+        pyplot.xlabel('Data')
+        pyplot.ylabel('Percentage')
+        
+        for bar, value in zip(bars, y_values):
+            pyplot.text(bar.get_x() + bar.get_width() / 2 - 0.15, bar.get_height() + 1, f"{value}%", ha='center', va='bottom')
+
+        # Set y-axis limits to 0% to 100%
+        pyplot.ylim(0, 100)
+        # Show the plot
         pyplot.show()

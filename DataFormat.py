@@ -9,7 +9,8 @@ class DataFormat:
 
     def strings_to_dates(self, columns):
         for column in columns :
-            self.df[column] = pd.to_datetime(self.df[column], format="%b-%Y")
+            #self.df[column] = pd.to_datetime(self.df[column], format="%b-%y")
+            self.df[column] = pd.to_datetime(self.df[column], errors='coerce').dt.to_period('M') 
    
     def values_to_categories(self, columns):
         for column in columns :
