@@ -66,7 +66,6 @@ class Plotter:
 
 def plot_percentage_bar_chart(x_values, y_values, title):
 
-
         # Plot the bar chart
         bars = pyplot.bar(x_values, y_values, color=['red'], alpha=0.7)
         pyplot.title(title)
@@ -80,3 +79,31 @@ def plot_percentage_bar_chart(x_values, y_values, title):
         pyplot.ylim(0, 100)
         # Show the plot
         pyplot.show()
+
+
+def plot_categorical_pie_charts(column, data1, data2, data3):
+
+    # Get counts for each unique value in the columns
+    counts1 = data1[column].value_counts()
+    counts2 = data2[column].value_counts()
+    counts3 = data3[column].value_counts()
+    # Create a figure with two subplots (1 row, 2 columns)
+    fig, axs = pyplot.subplots(1, 3, figsize=(12, 4))
+
+    # Plot pie chart for data1
+    axs[0].pie(counts1, labels=counts1.index, autopct='%1.1f%%', startangle=90)
+    axs[0].set_title(f' {column} for fully paid loans')
+
+    # Plot pie chart for data2
+    axs[1].pie(counts2, labels=counts2.index, autopct='%1.1f%%', startangle=90)
+    axs[1].set_title(f' {column} for charged off loans')
+
+    # Plot pie chart for data3
+    axs[2].pie(counts3, labels=counts3.index, autopct='%1.1f%%', startangle=90)
+    axs[2].set_title(f'{column} for late loans')
+
+    # Adjust layout for better spacing
+    pyplot.tight_layout()
+
+    # Show the pie charts
+    pyplot.show()
